@@ -43,8 +43,48 @@ export const login = async (req, res, next) => {
         }
     })
 
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000, // 1 يوم
+        path: "/"
+    })
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 أيام
+        path: "/"
+    });
+
     return successResponse({ res, statusCode: 200, message: "Login Successfully", data: { accessToken, refreshToken } })
 }
+
+export const logout = async (req, res, next) => {
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/"
+    });
+
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/"
+    });
+
+    return successResponse({
+        res,
+        statusCode: 200,
+        message: "Logout successful",
+        data: {}
+    });
+};
+
 
 
 
