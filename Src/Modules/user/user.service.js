@@ -48,9 +48,9 @@ export const createUser = async (req, res, next) => {
 //admin
 
 export const createTasks = async (req, res, next) => {
-    const { title, description, assignBy, assignTo, startDate, endDate, status } = req.body
+    const { title, description, assignBy, assignTo, startDate, endDate, status, notes } = req.body
     //filesss
-    const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, status,/*filless*/ }] })
+    const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, status, notes/*filless*/ }] })
     return successResponse({ res, statusCode: 201, message: "Tasks Create Successfully", data: createUser })
 }
 
@@ -81,4 +81,14 @@ export const getTasks = async (req, res, next) => {
         return next(new Error("Users Not Founded", { cause: 409 }))
     }
     return successResponse({ res, statusCode: 200, message: "task Deleted Successfully", data: tasks })
+}
+
+export const updateTasksByEmp = async (req, res, next) => {
+    const { id } = req.params
+    const { status, notes } = req.body
+    const task = await TaskModel.findOneAndUpdate({ _id: id }, { $set: { status, notes } }, { new: true })
+    if (!task) {
+        return next(new Error("task Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "User Update successffully", data: task })
 }

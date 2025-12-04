@@ -24,4 +24,6 @@ router.delete("/deleteTasks/:id", authentication, authorization({ role: ["Admin"
 
 router.get("/getTasks/:id", authentication, authorization({ role: ["Employee"] }), userService.getTasks)
 
+router.patch("/updateTasksByEmp/:id", authentication, authorization({ role: ["Employee"] }), userService.updateTasksByEmp)
+
 export default router
