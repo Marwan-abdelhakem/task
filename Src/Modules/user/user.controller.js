@@ -1,7 +1,8 @@
 import { Router } from "express"
 import * as userService from "./user.service.js"
 import { authentication, authorization } from "../../Middelwares/auth.middlewares.js"
-
+import { validation } from "../../Middelwares/validation.middelwares.js"
+import { tasksValidation } from "./user.validation.js"
 
 const router = Router()
 
@@ -14,5 +15,13 @@ router.patch("/updateUser/:id", authentication, authorization({ role: ["Admin"] 
 router.delete("/deleteUser/:id", authentication, authorization({ role: ["Admin"] }), userService.deleteUser)
 
 router.post("/createUser", authentication, authorization({ role: ["Admin"] }), userService.createUser)
+
+router.post("/createTasks", authentication, authorization({ role: ["Admin"] }), userService.createTasks)
+
+router.patch("/updateTasksByAdmin/:id", authentication, authorization({ role: ["Admin"] }), userService.updateTasksByAdmin)
+
+router.delete("/deleteTasks/:id", authentication, authorization({ role: ["Admin"] }), userService.deleteTasks)
+
+router.get("/getTasks/:id", authentication, authorization({ role: ["Employee"] }), userService.getTasks)
 
 export default router
