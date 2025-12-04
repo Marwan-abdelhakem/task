@@ -14,3 +14,13 @@ export const authentication = async (req, res, next) => {
     req.user = user
     return next()
 }
+
+
+export const authorization = ({ role = [] }) => {
+    return async (req, res, next) => {
+        if (!role.includes(req.user.role)) {
+            return next(new Error("Unauthorized", { cause: 403 }))
+        }
+        return next()
+    }
+}
