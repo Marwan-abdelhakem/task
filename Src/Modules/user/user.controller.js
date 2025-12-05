@@ -3,6 +3,7 @@ import * as userService from "./user.service.js"
 import { authentication, authorization } from "../../Middelwares/auth.middlewares.js"
 import { validation } from "../../Middelwares/validation.middelwares.js"
 import { tasksValidation } from "./user.validation.js"
+import { fileUplaod } from "../../Utlis/multer.utlis.js"
 
 const router = Router()
 
@@ -16,7 +17,7 @@ router.delete("/deleteUser/:id", authentication, authorization({ role: ["Admin"]
 
 router.post("/createUser", authentication, authorization({ role: ["Admin"] }), userService.createUser)
 
-router.post("/createTasks", authentication, authorization({ role: ["Admin"] }), userService.createTasks)
+router.post("/createTasks", authentication, fileUplaod().single("files"), authorization({ role: ["Admin"] }), userService.createTasks)
 
 router.patch("/updateTasksByAdmin/:id", authentication, authorization({ role: ["Admin"] }), userService.updateTasksByAdmin)
 

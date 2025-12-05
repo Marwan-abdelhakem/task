@@ -12,6 +12,7 @@ export const tasksValidation = joi.object({
         .messages({
             "date.greater": "End date must be after the start date",
         }),
+    files: joi.any().optional(),
     status: joi.string().valid("available", "unavailable").required(),
     notes: joi.string().optional(),
 })

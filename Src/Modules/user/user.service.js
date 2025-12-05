@@ -49,9 +49,9 @@ export const createUser = async (req, res, next) => {
 
 export const createTasks = async (req, res, next) => {
     const { title, description, assignBy, assignTo, startDate, endDate, status, notes } = req.body
-    //filesss
-    const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, status, notes/*filless*/ }] })
-    return successResponse({ res, statusCode: 201, message: "Tasks Create Successfully", data: createUser })
+    const files = req.file.filename
+    const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, files, status, notes }] })
+    return successResponse({ res, statusCode: 201, message: "Tasks Create Successfully", data: createTask })
 }
 
 export const updateTasksByAdmin = async (req, res, next) => {
@@ -71,6 +71,8 @@ export const deleteTasks = async (req, res, next) => {
     }
     return successResponse({ res, statusCode: 200, message: "task Deleted Successfully" })
 }
+
+
 
 //employee
 

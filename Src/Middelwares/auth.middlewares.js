@@ -12,6 +12,7 @@ export const authentication = async (req, res, next) => {
         return next(new Error("User Not Founded", { cause: 409 }))
     }
     req.user = user
+
     return next()
 }
 
