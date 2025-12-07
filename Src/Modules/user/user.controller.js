@@ -18,7 +18,7 @@ router.delete("/deleteUser/:id", authentication, authorization({ role: ["Admin"]
 
 router.post("/createUser", authentication, authorization({ role: ["Admin"] }), userService.createUser)
 
-router.post("/createTasks", authentication, fileUplaod().single("files"), authorization({ role: ["Admin"] }), userService.createTasks)
+router.post("/createTasks", validation(tasksValidation), authentication, fileUplaod().single("files"), authorization({ role: ["Admin"] }), userService.createTasks)
 
 router.patch("/updateTasksByAdmin/:id", authentication, authorization({ role: ["Admin"] }), userService.updateTasksByAdmin)
 
