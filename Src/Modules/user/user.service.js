@@ -178,11 +178,9 @@ export const deleteMeeting = async (req, res, next) => {
 
 export const getMeetingIn = async (req, res, next) => {
     const { id } = req.params
-    const meeting = await MeetingModel.find({ addUsers: { $in: [id.toString()] } })
-    console.log(meeting)
+    const meeting = await MeetingModel.find({ addUsers: id })
     if (meeting.length === 0) {
         return next(new Error("meeting Not Founded", { cause: 404 }))
     }
     return successResponse({ res, statusCode: 200, message: "Successfully", data: meeting })
 }
-
