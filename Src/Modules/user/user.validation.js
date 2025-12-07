@@ -16,3 +16,25 @@ export const tasksValidation = joi.object({
     status: joi.string().valid("available", "unavailable").required(),
     notes: joi.string().optional(),
 })
+//role title subTitle describtion day startTime endTime typeOfMeeting zoomLink addUsers  files 
+export const meetingValidation = joi.object({
+    role: joi.string().valid("User", "Admin", "Employee"),
+    title: joi.string().required().messages({
+        "any.required": "Title is required"
+    }),
+    subTitle: joi.string().required(),
+    describtion: joi.string().required(),
+    day: joi.date().required(),
+    startTime: joi.date().required(),
+    endTime: joi.date().required(),
+    typeOfMeeting: joi.string().valid("online", "offline"),
+    zoomLink: joi.string().uri()
+        .when("typeOfMeeting", {
+            is: "online",
+            then: joi.required(),
+            otherwise: joi.forbidden()
+        }),
+    creatorId: joi.string().required(),
+    addUsers: joi.array().items(joi.string()),
+    files: joi.any().optional()
+})

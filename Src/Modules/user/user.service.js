@@ -3,6 +3,7 @@ import UserModel from "../../DB/model/user.model.js"
 import * as dbService from "../../DB/dbService.js"
 import { comparePassowrd, hashPassword } from "../../Utlis/hash.utlis.js"
 import TaskModel from "../../DB/model/tasks.model.js"
+import MeetingModel from "../../DB/model/meeting.model.js"
 
 export const getProfile = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: req.user } })
@@ -72,8 +73,6 @@ export const deleteTasks = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "task Deleted Successfully" })
 }
 
-
-
 //employee
 
 export const getTasks = async (req, res, next) => {
@@ -94,3 +93,96 @@ export const updateTasksByEmp = async (req, res, next) => {
     }
     return successResponse({ res, statusCode: 200, message: "User Update successffully", data: task })
 }
+
+//Meeting 
+
+//role title subTitle describtion day startTime endTime typeOfMeeting zoomLink  creatorId addUsers  files 
+export const creatMeeting = async (req, res, next) => {
+    const { role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers } = req.body
+    const files = req.file ? req.file.filename : null
+    const creator = await dbService.findById({ model: UserModel, id: creatorId })
+    if (!creator) {
+        return next(new Error("User Not Founded", { cause: 404 }))
+    }
+    const user = await dbService.findById({ model: UserModel, id: addUsers })
+    if (!user) {
+        return next(new Error("User Not Founded", { cause: 404 }))
+    }
+    if (creator.role == "Admin") {
+        const createMeeting = await dbService.create({ model: MeetingModel, data: [{ role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers, files }] })
+        return successResponse({ res, statusCode: 201, message: "Meeting Create Successfully", data: createMeeting })
+    }
+
+    if (creator.role !== user.role) {
+        return next(new Error("Meeting not allowed.", { cause: 409 }))
+    }
+    const createMeeting = await dbService.create({ model: MeetingModel, data: [{ role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers, files }] })
+    return successResponse({ res, statusCode: 201, message: "Meeting Create Successfully", data: createMeeting })
+}
+
+//admin
+
+//Get All Meeting
+
+export const getAllMeeting = async (req, res, next) => {
+    const meeting = await MeetingModel.find()
+    if (meeting.length === 0) {
+        return next(new Error("Users Not Founded", { cause: 404 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Successfully", data: meeting })
+}
+
+export const getAllMeetings = async (req, res, next) => {
+    const { id } = req.params
+    const meeting = await MeetingModel.find({ creatorId: id })
+    if (meeting.length === 0) {
+        return next(new Error("Users Not Founded", { cause: 404 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Successfully", data: meeting })
+}
+
+export const updateMeeting = async (req, res, next) => {
+    const { id } = req.params
+    const { creatorId } = req.body
+    const meeting = await MeetingModel.findById(id)
+    if (!meeting) {
+        return next(new Error("Meeting Not Founded", { cause: 409 }))
+    }
+    if (meeting.creatorId.toString() !== creatorId) {
+        return next(new Error("You are not the owner of this meeting", { cause: 403 }));
+    }
+    const updateMeeting = await MeetingModel.findOneAndUpdate({ _id: id }, { $set: { ...req.body } }, { new: true })
+    if (!updateMeeting) {
+        return next(new Error("Meeting Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Meeting Update successffully", data: updateMeeting })
+}
+
+export const deleteMeeting = async (req, res, next) => {
+    const { id } = req.params
+    const { creatorId } = req.body
+    const meeting = await MeetingModel.findById(id)
+    if (!meeting) {
+        return next(new Error("Meeting Not Founded", { cause: 409 }))
+    }
+    if (meeting.creatorId.toString() !== creatorId) {
+        return next(new Error("You are not the owner of this meeting", { cause: 403 }));
+    }
+    const deleteMeeting = await MeetingModel.findOneAndDelete({ _id: id })
+    if (!deleteMeeting) {
+        return next(new Error("Users Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Meeting Deleted Successfully" })
+}
+
+
+export const getMeetingIn = async (req, res, next) => {
+    const { id } = req.params
+    const meeting = await MeetingModel.find({ addUsers: { $in: [id.toString()] } })
+    console.log(meeting)
+    if (meeting.length === 0) {
+        return next(new Error("meeting Not Founded", { cause: 404 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Successfully", data: meeting })
+}
+
