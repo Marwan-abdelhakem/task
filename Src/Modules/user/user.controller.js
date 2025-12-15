@@ -2,7 +2,7 @@ import { Router } from "express"
 import * as userService from "./user.service.js"
 import { authentication, authorization } from "../../Middelwares/auth.middlewares.js"
 import { validation } from "../../Middelwares/validation.middelwares.js"
-import { meetingValidation, tasksValidation } from "./user.validation.js"
+import { jobValidation, meetingValidation, newEmployeeValidation, tasksValidation } from "./user.validation.js"
 import { fileUplaod } from "../../Utlis/multer.utlis.js"
 
 
@@ -40,5 +40,17 @@ router.patch("/updateMeeting/:id", authentication, authorization({ role: ["Emplo
 router.delete("/deleteMeeting/:id", authentication, authorization({ role: ["Employee", "HR", "Admin"] }), userService.deleteMeeting)
 
 router.get("/getMeetingIn/:id", authentication, authorization({ role: ["Employee", "HR", "Admin"] }), userService.getMeetingIn)
+
+router.post("/createJob", validation(jobValidation), authentication, authorization({ role: ["Admin", "HR"] }), userService.createJob)
+
+router.post("/applayForJob", validation(newEmployeeValidation), fileUplaod().single("cv"), userService.applayForJob)
+
+router.get("/getAlljobs", userService.getAlljobs)
+
+router.get("/getJobById/:id", userService.getJobById)
+
+router.delete("/deleteJobs/:id", authentication, authorization({ role: ["Admin", "HR"] }), userService.deleteJobs)
+
+router.patch("/updateJob/:id", authentication, authorization({ role: ["Admin", "HR"] }), userService.updateJobs)
 
 export default router

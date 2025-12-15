@@ -4,6 +4,9 @@ import * as dbService from "../../DB/dbService.js"
 import { comparePassowrd, hashPassword } from "../../Utlis/hash.utlis.js"
 import TaskModel from "../../DB/model/tasks.model.js"
 import MeetingModel from "../../DB/model/meeting.model.js"
+import JobModel from "../../DB/model/job.model.js"
+import newEmployeeModel from "../../DB/model/newEmployee.model.js"
+import { emailEvent } from "../../Utlis/event.utlis.js"
 
 export const getProfile = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: req.user } })
@@ -175,7 +178,6 @@ export const deleteMeeting = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "Meeting Deleted Successfully" })
 }
 
-
 export const getMeetingIn = async (req, res, next) => {
     const { id } = req.params
     const meeting = await MeetingModel.find({ addUsers: id })
@@ -183,4 +185,77 @@ export const getMeetingIn = async (req, res, next) => {
         return next(new Error("meeting Not Founded", { cause: 404 }))
     }
     return successResponse({ res, statusCode: 200, message: "Successfully", data: meeting })
+}
+
+export const createJob = async (req, res, next) => {
+    const { role, creatorId, name, title } = req.body
+    const creator = await dbService.findById({ model: UserModel, id: creatorId })
+    if (!creator) {
+        return next(new Error("User Not Founded", { cause: 404 }))
+    }
+    const createJob = await dbService.create({ model: JobModel, data: [{ role, creatorId, name, title }] })
+    return successResponse({ res, statusCode: 201, message: "Meeting Create Successfully", data: createJob })
+}
+
+export const applayForJob = async (req, res, next) => {
+    const { name, title, email, phone, age, gender, qualification, skills, range_salary, experince, job_id } = req.body
+    const cv = req.file ? req.file.filename : null
+    const job = await dbService.findById({ model: JobModel, id: job_id })
+    if (!job) {
+        return next(new Error("job Not Founded", { cause: 404 }))
+    }
+    emailEvent.emit("confirmEmail", { to: email })
+    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, title, email, phone, age, gender, qualification, skills, range_salary, experince, cv, job_id }] })
+    return successResponse({ res, statusCode: 201, message: "User created successfully", data: applayForJob })
+}
+
+export const getAlljobs = async (req, res, next) => {
+    const job = await JobModel.find()
+    if (job.length === 0) {
+        return next(new Error("Jobs Not Founded", { cause: 404 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Successfully", data: job })
+}
+
+export const getJobById = async (req, res, next) => {
+    const { id } = req.params
+    const job = await JobModel.find({ id: id })
+    if (job.length === 0) {
+        return next(new Error("Jobs Not Founded", { cause: 404 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Successfully", data: job })
+}
+
+export const deleteJobs = async (req, res, next) => {
+    const { id } = req.params
+    const { creatorId } = req.body
+    const job = await JobModel.findById(id)
+    if (!job) {
+        return next(new Error("job Not Founded", { cause: 409 }))
+    }
+    if (job.creatorId.toString() !== creatorId) {
+        return next(new Error("You are not the owner of this Job", { cause: 403 }));
+    }
+    const deleteJob = await JobModel.findOneAndDelete({ _id: id })
+    if (!deleteJob) {
+        return next(new Error("Users Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Job Deleted Successfully" })
+}
+
+export const updateJobs = async (req, res, next) => {
+    const { id } = req.params
+    const { creatorId } = req.body
+    const job = await JobModel.findById(id)
+    if (!job) {
+        return next(new Error("job Not Founded", { cause: 409 }))
+    }
+    if (job.creatorId.toString() !== creatorId) {
+        return next(new Error("You are not the owner of this Job", { cause: 403 }));
+    }
+    const updateJob = await JobModel.findOneAndUpdate({ _id: id }, { $set: { ...req.body } }, { new: true })
+    if (!updateJob) {
+        return next(new Error("Users Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "Meeting Update successffully", data: updateJob })
 }

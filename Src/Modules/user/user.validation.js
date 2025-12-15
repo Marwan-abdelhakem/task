@@ -38,3 +38,25 @@ export const meetingValidation = joi.object({
     addUsers: joi.array().items(joi.string()),
     files: joi.any().optional()
 })
+//role creatorId  name title email phone age gender qualification skills range_salary experince cv
+export const jobValidation = joi.object({
+    role: joi.string().valid("HR", "Admin").required(),
+    creatorId: joi.string().required(),
+    name: joi.string().required(),
+    title: joi.string().required(),
+})
+
+export const newEmployeeValidation = joi.object({
+    name: joi.string().required(),
+    title: joi.string().required(),
+    email: joi.string().required(),
+    phone: joi.string().required(),
+    age: joi.string().required(),
+    gender: joi.string().valid("male", "female"),
+    qualification: joi.string().required(),
+    skills: joi.string(),
+    range_salary: joi.number().required(),
+    experince: joi.string().required(),
+    cv: joi.any().required(),
+    job_id: joi.string().required()
+})
