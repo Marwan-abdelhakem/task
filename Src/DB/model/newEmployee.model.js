@@ -7,11 +7,6 @@ const newEmployeeSchema = new Schema(
             required: true,
             trim: true,
         },
-        title: {
-            type: String,
-            required: true,
-            trim: true,
-        },
         email: {
             type: String,
             required: true,
@@ -36,14 +31,6 @@ const newEmployeeSchema = new Schema(
             type: String,
             required: true,
         },
-        skills: {
-            type: String,
-            required: true,
-        },
-        range_salary: {
-            type: Number,
-            required: true
-        },
         experince: {
             type: String,
             required: true,
@@ -51,6 +38,18 @@ const newEmployeeSchema = new Schema(
         cv: {
             type: [String],
             default: [],
+        },
+        status: {
+            type: String,
+            enum: [
+                "new",
+                "screened",
+                "interview",
+                "offered",
+                "hired",
+                "rejected"
+            ],
+            default: "new"
         },
         job_id: {
             type: String,

@@ -38,25 +38,32 @@ export const meetingValidation = joi.object({
     addUsers: joi.array().items(joi.string()),
     files: joi.any().optional()
 })
-//role creatorId  name title email phone age gender qualification skills range_salary experince cv
+//creatorId name title range_salary experince typeOfJobs description skills  qualification gender status 
 export const jobValidation = joi.object({
-    role: joi.string().valid("HR", "Admin").required(),
     creatorId: joi.string().required(),
     name: joi.string().required(),
     title: joi.string().required(),
+    range_salary: joi.string().required(),
+    experince: joi.string().required(),
+    typeOfJobs: joi.string().valid("Part Time", "Full Time", "Remote").required(),
+    description: joi.string().required(),
+    skills: joi.string().required(),
+    qualification: joi.string().required(),
+    gender: joi.string().valid("male", "female").required(),
+    status: joi.string().valid("pending", "approved", "rejected").required()
 })
+
+//name  email phone age gender  qualification experince cv status job_id 
 
 export const newEmployeeValidation = joi.object({
     name: joi.string().required(),
-    title: joi.string().required(),
     email: joi.string().required(),
     phone: joi.string().required(),
     age: joi.string().required(),
     gender: joi.string().valid("male", "female"),
     qualification: joi.string().required(),
-    skills: joi.string(),
-    range_salary: joi.number().required(),
     experince: joi.string().required(),
     cv: joi.any().required(),
+    status: joi.string().valid("new", "screened", "interview", "offered", "hired", "rejected").required(),
     job_id: joi.string().required()
 })

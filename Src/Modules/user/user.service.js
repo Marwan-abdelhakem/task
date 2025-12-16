@@ -188,24 +188,25 @@ export const getMeetingIn = async (req, res, next) => {
 }
 
 export const createJob = async (req, res, next) => {
-    const { role, creatorId, name, title } = req.body
+    const { creatorId, name, title, range_salary, experince, typeOfJobs, description, skills, qualification, gender, status } = req.body
     const creator = await dbService.findById({ model: UserModel, id: creatorId })
     if (!creator) {
         return next(new Error("User Not Founded", { cause: 404 }))
     }
-    const createJob = await dbService.create({ model: JobModel, data: [{ role, creatorId, name, title }] })
+    const createJob = await dbService.create({ model: JobModel, data: [{ creatorId, name, title, range_salary, experince, typeOfJobs, description, skills, qualification, gender, status }] })
     return successResponse({ res, statusCode: 201, message: "Meeting Create Successfully", data: createJob })
 }
 
+//name  email phone age gender  qualification experince cv status job_id 
 export const applayForJob = async (req, res, next) => {
-    const { name, title, email, phone, age, gender, qualification, skills, range_salary, experince, job_id } = req.body
+    const { name, email, phone, age, gender, qualification, experince, status, job_id } = req.body
     const cv = req.file ? req.file.filename : null
     const job = await dbService.findById({ model: JobModel, id: job_id })
     if (!job) {
         return next(new Error("job Not Founded", { cause: 404 }))
     }
     emailEvent.emit("confirmEmail", { to: email })
-    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, title, email, phone, age, gender, qualification, skills, range_salary, experince, cv, job_id }] })
+    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, email, phone, age, gender, qualification, experince, cv, status, job_id }] })
     return successResponse({ res, statusCode: 201, message: "User created successfully", data: applayForJob })
 }
 
