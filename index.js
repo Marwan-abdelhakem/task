@@ -7,4 +7,6 @@ const port = process.env.PORT
 
 await bootStrap(app, express)
 
-app.listen(port, () => console.log(`Server app listening on port ${port}!`))
+// app.listen(port, () => console.log(`Server app listening on port ${port}!`))
+
+export default app;

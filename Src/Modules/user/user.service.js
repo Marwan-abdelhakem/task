@@ -53,7 +53,7 @@ export const createUser = async (req, res, next) => {
 
 export const createTasks = async (req, res, next) => {
     const { title, description, assignBy, assignTo, startDate, endDate, status, notes } = req.body
-    const files = req.file.filename
+    const files = req.file ? req.file.filename : null
     const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, files, status, notes }] })
     return successResponse({ res, statusCode: 201, message: "Tasks Create Successfully", data: createTask })
 }
@@ -82,9 +82,9 @@ export const getTasks = async (req, res, next) => {
     const { id } = req.params
     const tasks = await TaskModel.find({ assignTo: id })
     if (tasks.length === 0) {
-        return next(new Error("Users Not Founded", { cause: 409 }))
+        return next(new Error("tasks Not Founded", { cause: 409 }))
     }
-    return successResponse({ res, statusCode: 200, message: "task Deleted Successfully", data: tasks })
+    return successResponse({ res, statusCode: 200, message: "tasks", data: tasks })
 }
 
 export const updateTasksByEmp = async (req, res, next) => {
@@ -139,7 +139,7 @@ export const getAllMeetings = async (req, res, next) => {
     const { id } = req.params
     const meeting = await MeetingModel.find({ creatorId: id })
     if (meeting.length === 0) {
-        return next(new Error("Users Not Founded", { cause: 404 }))
+        return next(new Error("meetings Not Founded", { cause: 404 }))
     }
     return successResponse({ res, statusCode: 200, message: "Successfully", data: meeting })
 }
