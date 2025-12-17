@@ -1,8 +1,9 @@
 import express from 'express'
 import bootStrap from "./Src/app.controller.js"
 
+
 const app = express()
-const port = 3000
+const port = process.env.PORT
 
 await bootStrap(app, express)
 
