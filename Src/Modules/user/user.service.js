@@ -260,3 +260,5 @@ export const updateJobs = async (req, res, next) => {
     }
     return successResponse({ res, statusCode: 200, message: "Meeting Update successffully", data: updateJob })
 }
+
+console.log("Hiii");
