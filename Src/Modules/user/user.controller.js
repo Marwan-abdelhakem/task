@@ -10,7 +10,7 @@ const router = Router()
 
 router.get("/getProfile", authentication, authorization({ role: ["Admin"] }), userService.getProfile)
 
-router.get("/getAllUsers", authentication, authorization({ role: ["Admin"] }), userService.getAllUsers)
+router.get("/getAllUsers", userService.getAllUsers)
 
 router.patch("/updateUser/:id", authentication, authorization({ role: ["Admin"] }), userService.updateUser)
 
