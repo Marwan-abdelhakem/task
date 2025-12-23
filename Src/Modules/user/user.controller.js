@@ -4,7 +4,7 @@ import { authentication, authorization } from "../../Middelwares/auth.middleware
 import { validation } from "../../Middelwares/validation.middelwares.js"
 import { jobValidation, meetingValidation, newEmployeeValidation, tasksValidation } from "./user.validation.js"
 import { fileUplaod } from "../../Utlis/multer.utlis.js"
-
+import { cloudFileUpload } from "../../Utlis/cloude.multer.utlis.js"
 
 const router = Router()
 
@@ -43,7 +43,7 @@ router.get("/getMeetingIn/:id", authentication, authorization({ role: ["Employee
 
 router.post("/createJob", validation(jobValidation), authentication, authorization({ role: ["Admin", "HR"] }), userService.createJob)
 
-router.post("/applayForJob", validation(newEmployeeValidation), fileUplaod().single("cv"), userService.applayForJob)
+router.post("/applayForJob", validation(newEmployeeValidation), cloudFileUpload({ validation: [] }).single("cv"), userService.applayForJob)
 
 router.get("/getAlljobs", userService.getAlljobs)
 

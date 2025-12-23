@@ -7,6 +7,7 @@ import MeetingModel from "../../DB/model/meeting.model.js"
 import JobModel from "../../DB/model/job.model.js"
 import newEmployeeModel from "../../DB/model/newEmployee.model.js"
 import { emailEvent } from "../../Utlis/event.utlis.js"
+import { cloudinaryConfig } from "../../Utlis/cloudinary.utlis.js"
 
 export const getProfile = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: req.user } })
@@ -200,7 +201,9 @@ export const createJob = async (req, res, next) => {
 //name  email phone age gender  qualification experince cv status job_id 
 export const applayForJob = async (req, res, next) => {
     const { name, email, phone, age, gender, qualification, experince, status, job_id } = req.body
-    const cv = req.file ? req.file.path : null
+    const cloud = await cloudinaryConfig().uploader.upload(req.file.path)
+    const cv = cloud
+
     const job = await dbService.findById({ model: JobModel, id: job_id })
     if (!job) {
         return next(new Error("job Not Founded", { cause: 404 }))
