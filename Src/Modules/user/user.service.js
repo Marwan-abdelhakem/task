@@ -209,7 +209,7 @@ export const applayForJob = async (req, res, next) => {
         return next(new Error("job Not Founded", { cause: 404 }))
     }
     emailEvent.emit("confirmEmail", { to: email })
-    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, email, phone, age, gender, qualification, experince, cv, status, job_id }] })
+    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, email, phone, age, gender, qualification, experince, cv, status, job_id, cloud }] })
     return successResponse({ res, statusCode: 201, message: "User Applay successfully", data: applayForJob })
 }
 
