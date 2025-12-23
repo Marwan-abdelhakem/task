@@ -8,6 +8,7 @@ import JobModel from "../../DB/model/job.model.js"
 import newEmployeeModel from "../../DB/model/newEmployee.model.js"
 import { emailEvent } from "../../Utlis/event.utlis.js"
 import { cloudinaryConfig } from "../../Utlis/cloudinary.utlis.js"
+import path from "path"
 
 export const getProfile = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: req.user } })
