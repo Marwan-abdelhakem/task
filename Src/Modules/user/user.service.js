@@ -200,7 +200,7 @@ export const createJob = async (req, res, next) => {
 //name  email phone age gender  qualification experince cv status job_id 
 export const applayForJob = async (req, res, next) => {
     const { name, email, phone, age, gender, qualification, experince, status, job_id } = req.body
-    const cv = req.file ? req.file.filename : null
+    const cv = req.file ? req.file.path : null
     const job = await dbService.findById({ model: JobModel, id: job_id })
     if (!job) {
         return next(new Error("job Not Founded", { cause: 404 }))
