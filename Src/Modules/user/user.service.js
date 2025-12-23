@@ -194,7 +194,7 @@ export const createJob = async (req, res, next) => {
         return next(new Error("User Not Founded", { cause: 404 }))
     }
     const createJob = await dbService.create({ model: JobModel, data: [{ creatorId, name, title, range_salary, experince, typeOfJobs, description, skills, qualification, gender, status }] })
-    return successResponse({ res, statusCode: 201, message: "Meeting Create Successfully", data: createJob })
+    return successResponse({ res, statusCode: 201, message: "Job Create Successfully", data: createJob })
 }
 
 //name  email phone age gender  qualification experince cv status job_id 
@@ -207,7 +207,7 @@ export const applayForJob = async (req, res, next) => {
     }
     emailEvent.emit("confirmEmail", { to: email })
     const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, email, phone, age, gender, qualification, experince, cv, status, job_id }] })
-    return successResponse({ res, statusCode: 201, message: "User created successfully", data: applayForJob })
+    return successResponse({ res, statusCode: 201, message: "User Applay successfully", data: applayForJob })
 }
 
 export const getAlljobs = async (req, res, next) => {
@@ -261,4 +261,3 @@ export const updateJobs = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "Meeting Update successffully", data: updateJob })
 }
 
-console.log("Hiii");
