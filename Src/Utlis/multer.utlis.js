@@ -18,7 +18,7 @@ export const fileUplaod = ({ customPath = "general" } = {}) => {
     }
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
-            cb(null, path.resolve(fullPath))
+            cb(null, fullPath)
         },
         filename: (req, file, cb) => {
             cb(null, file.originalname)
