@@ -12,9 +12,9 @@ export const fileValidation = {
 export const fileUplaod = ({ customPath = "general" } = {}) => {
 
     let basePath = `uploads/${customPath}`
-    const fullPath = path.resolve(`./src/${basePath}`)
+    const fullPath = path.resolve(`/tmp/${basePath}`)
     if (!fs.existsSync(fullPath)) {
-        fs.mkdirSync(fullPath)
+        fs.mkdirSync(fullPath, { recursive: true })
     }
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
