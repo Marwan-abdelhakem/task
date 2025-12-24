@@ -3,8 +3,8 @@ import * as userService from "./user.service.js"
 import { authentication, authorization } from "../../Middelwares/auth.middlewares.js"
 import { validation } from "../../Middelwares/validation.middelwares.js"
 import { jobValidation, meetingValidation, newEmployeeValidation, tasksValidation } from "./user.validation.js"
-import { fileUplaod, fileValidation } from "../../Utlis/multer.utlis.js"
-import { cloudFileUpload } from "../../Utlis/cloude.multer.utlis.js"
+import { fileUpload } from "../../Utlis/multer.utlis.js"
+
 
 const router = Router()
 
@@ -18,7 +18,7 @@ router.delete("/deleteUser/:id", authentication, authorization({ role: ["Admin"]
 
 router.post("/createUser", authentication, authorization({ role: ["Admin"] }), userService.createUser)
 
-router.post("/createTasks", validation(tasksValidation), authentication, fileUplaod().single("files"), authorization({ role: ["Admin"] }), userService.createTasks)
+router.post("/createTasks", validation(tasksValidation), authentication, fileUpload().single("files"), authorization({ role: ["Admin"] }), userService.createTasks)
 
 router.patch("/updateTasksByAdmin/:id", authentication, authorization({ role: ["Admin"] }), userService.updateTasksByAdmin)
 
@@ -29,7 +29,7 @@ router.get("/getTasks/:id", authentication, authorization({ role: ["Employee"] }
 router.patch("/updateTasksByEmp/:id", authentication, authorization({ role: ["Employee"] }), userService.updateTasksByEmp)
 
 
-router.post("/creatMeeting", validation(meetingValidation), authentication, fileUplaod().single("files"), authorization({ role: ["Employee", "HR", "Admin"] }), userService.creatMeeting)
+router.post("/creatMeeting", validation(meetingValidation), authentication, fileUpload().single("files"), authorization({ role: ["Employee", "HR", "Admin"] }), userService.creatMeeting)
 
 router.get("/getAllMeeting", authentication, authorization({ role: ["Admin"] }), userService.getAllMeeting)
 
@@ -43,7 +43,7 @@ router.get("/getMeetingIn/:id", authentication, authorization({ role: ["Employee
 
 router.post("/createJob", validation(jobValidation), authentication, authorization({ role: ["Admin", "HR"] }), userService.createJob)
 
-router.post("/applayForJob", validation(newEmployeeValidation),/* fileUplaod({ customPath: "CV", validation: [...fileValidation.documents] }).single("cv")*/cloudFileUpload().single("cv"), userService.applayForJob)
+router.post("/applayForJob", validation(newEmployeeValidation), fileUpload().single("cv"), userService.applayForJob)
 
 router.get("/getAlljobs", userService.getAlljobs)
 
