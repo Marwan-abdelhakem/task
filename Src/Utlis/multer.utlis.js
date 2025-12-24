@@ -25,15 +25,15 @@ export const fileUplaod = ({ customPath = "general" } = {}) => {
         }
     })
 
-    const fileFilter = (req, file, cb) => {
-        if (validation.includes(file.mimetype)) {
-            cb(null, true)
-        } else {
-            return cb(new Error("Invalid File Type"), false)
-        }
-    }
+    // const fileFilter = (req, file, cb) => {
+    //     if (validation.includes(file.mimetype)) {
+    //         cb(null, true)
+    //     } else {
+    //         return cb(new Error("Invalid File Type"), false)
+    //     }
+    // }
     return multer({
-        fileFilter,
+        // fileFilter,
         storage
     })
 }
