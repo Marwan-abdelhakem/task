@@ -35,8 +35,10 @@ const newEmployeeSchema = new Schema(
             type: String,
             required: true,
         },
+        profileCloudDoc: { publicId: String, secure_url: String },
         cv: {
             type: [String],
+            required: true,
             default: [],
         },
         status: {

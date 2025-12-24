@@ -8,7 +8,6 @@ import JobModel from "../../DB/model/job.model.js"
 import newEmployeeModel from "../../DB/model/newEmployee.model.js"
 import { emailEvent } from "../../Utlis/event.utlis.js"
 import { cloudinaryConfig } from "../../Utlis/cloudinary.utlis.js"
-import path from "path"
 
 export const getProfile = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: req.user } })
@@ -198,20 +197,20 @@ export const createJob = async (req, res, next) => {
     const createJob = await dbService.create({ model: JobModel, data: [{ creatorId, name, title, range_salary, experince, typeOfJobs, description, skills, qualification, gender, status }] })
     return successResponse({ res, statusCode: 201, message: "Job Create Successfully", data: createJob })
 }
-
 //name  email phone age gender  qualification experince cv status job_id 
 export const applayForJob = async (req, res, next) => {
     const { name, email, phone, age, gender, qualification, experince, status, job_id } = req.body
-    const cloud = await cloudinaryConfig().uploader.upload(req.file.path)
-    const cv = cloud
-
+    const { secure_url, public_id } = await cloudinaryConfig().uploader.upload(req.file.path)
+    const profileCloudDoc = { secure_url, public_id }
+    const cv = req.file ? req.file.path : null
     const job = await dbService.findById({ model: JobModel, id: job_id })
     if (!job) {
         return next(new Error("job Not Founded", { cause: 404 }))
     }
     emailEvent.emit("confirmEmail", { to: email })
-    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, email, phone, age, gender, qualification, experince, cv, status, job_id, cloud }] })
-    return successResponse({ res, statusCode: 201, message: "User Applay successfully", data: cloud })
+    const applayForJob = await dbService.create({ model: newEmployeeModel, data: [{ name, email, phone, age, gender, qualification, experince, profileCloudDoc, cv, status, job_id }] })
+
+    return successResponse({ res, statusCode: 201, message: "User Applay successfully", data: applayForJob })
 }
 
 export const getAlljobs = async (req, res, next) => {
