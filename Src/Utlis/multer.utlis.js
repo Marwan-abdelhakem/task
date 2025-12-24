@@ -9,7 +9,7 @@ export const fileValidation = {
 }
 
 
-export const fileUplaod = ({ customPath = "general", validation = [] } = {}) => {
+export const fileUplaod = ({ customPath = "general" } = {}) => {
 
     let basePath = `uploads/${customPath}`
     const fullPath = path.resolve(`./src/${basePath}`)

@@ -1,7 +1,7 @@
 import multer from "multer"
 
 
-export const cloudFileUpload = ({ validation = [] }) => {
+export const cloudFileUpload = () => {
     const storage = multer.diskStorage({})
     const fileFilter = (req, file, cb) => {
         if (validation.includes(file.mimetype)) {

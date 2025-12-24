@@ -43,7 +43,7 @@ router.get("/getMeetingIn/:id", authentication, authorization({ role: ["Employee
 
 router.post("/createJob", validation(jobValidation), authentication, authorization({ role: ["Admin", "HR"] }), userService.createJob)
 
-router.post("/applayForJob", validation(newEmployeeValidation),/* fileUplaod({ customPath: "CV", validation: [...fileValidation.documents] }).single("cv")*/cloudFileUpload({ validation: [...fileValidation.documents] }).single("cv"), userService.applayForJob)
+router.post("/applayForJob", validation(newEmployeeValidation),/* fileUplaod({ customPath: "CV", validation: [...fileValidation.documents] }).single("cv")*/cloudFileUpload().single("cv"), userService.applayForJob)
 
 router.get("/getAlljobs", userService.getAlljobs)
 
