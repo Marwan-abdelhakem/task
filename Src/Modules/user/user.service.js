@@ -115,9 +115,9 @@ export const updateTasksByEmp = async (req, res, next) => {
 //role title subTitle describtion day startTime endTime typeOfMeeting zoomLink  creatorId addUsers  files 
 export const creatMeeting = async (req, res, next) => {
     const { role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers } = req.body
-    let files = null;
+    let file = null;
     if (req.file) {
-        files = await uploadToCloudinary(req.file.buffer);
+        file = await uploadToCloudinary(req.file.buffer);
     }
 
     const creator = await dbService.findById({ model: UserModel, id: creatorId })
@@ -129,7 +129,7 @@ export const creatMeeting = async (req, res, next) => {
         return next(new Error("User Not Founded", { cause: 404 }))
     }
     if (creator.role == "Admin") {
-        const createMeeting = await dbService.create({ model: MeetingModel, data: [{ role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers, files }] })
+        const createMeeting = await dbService.create({ model: MeetingModel, data: [{ role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers, files: file }] })
         return successResponse({ res, statusCode: 201, message: "Meeting Create Successfully", data: createMeeting })
     }
 
