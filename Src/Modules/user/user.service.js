@@ -6,6 +6,8 @@ import TaskModel from "../../DB/model/tasks.model.js"
 import MeetingModel from "../../DB/model/meeting.model.js"
 import JobModel from "../../DB/model/job.model.js"
 import newEmployeeModel from "../../DB/model/newEmployee.model.js"
+import LeaveModel from "../../DB/model/leave.model.js"
+import leaveRequestModel from "../../DB/model/leaveRequest.model.js"
 import { emailEvent } from "../../Utlis/event.utlis.js"
 import streamifier from "streamifier";
 import cloudinary from "../../config/cloudinary.js";
@@ -53,13 +55,19 @@ export const deleteUser = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
     const { role, user_name, email, password, phone, salary } = req.body
+
     const user = await dbService.findOne({ model: UserModel, filter: { email } })
     if (user) {
         return next(new Error("Email already exists", { cause: 409 }))
     }
     const hasshPassword = await hashPassword({ plainText: password })
     const createUser = await dbService.create({ model: UserModel, data: [{ role, user_name, email, password: hasshPassword, phone, salary }] })
-    return successResponse({ res, statusCode: 201, message: "User Create Successfully", data: createUser })
+    const totalDays = 20
+    const leaveType = "annual"
+    const employeeID = createUser[0]._id
+    console.log(employeeID);
+    const leaveUser = await dbService.create({ model: LeaveModel, data: [{ totalDays, leaveType, employeeID }] })
+    return successResponse({ res, statusCode: 201, message: "User Create Successfully", data: { createUser, leaveUser } })
 }
 
 //admin
@@ -111,6 +119,24 @@ export const updateTasksByEmp = async (req, res, next) => {
         return next(new Error("task Not Founded", { cause: 409 }))
     }
     return successResponse({ res, statusCode: 200, message: "User Update successffully", data: task })
+}
+
+//Leave Request by emloyee
+
+export const LeaveRequest = async (req, res, next) => {
+    const { employeeId, leaveType, startDate, endDate, reason, status } = req.body
+    const leaveRequest = await dbService.create({ model: leaveRequestModel, data: [{ employeeId, leaveType, startDate, endDate, reason, status }] })
+    return successResponse({ res, statusCode: 201, message: "Request Create Successfully", data: leaveRequest })
+}
+
+//get All Request by HR
+
+export const getAllRequest = async (req, res, next) => {
+    const requests = await leaveRequestModel.find()
+    if (users.length === 0) {
+        return next(new Error("requests Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "successfully", data: { user: requests } })
 }
 
 //Meeting 

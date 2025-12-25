@@ -3,7 +3,7 @@ import joi from "joi"
 
 
 export const signUpValidation = joi.object({
-    role: joi.string().valid("User", "Admin", "Employee"),
+    role: joi.string().valid("HR", "Admin", "Employee"),
     user_name: joi.string().min(3).max(20).required(),
     email: joi.string().email().required(),
     password: joi.string()
