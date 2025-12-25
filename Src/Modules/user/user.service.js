@@ -66,8 +66,11 @@ export const createUser = async (req, res, next) => {
 
 export const createTasks = async (req, res, next) => {
     const { title, description, assignBy, assignTo, startDate, endDate, status, notes } = req.body
-    const files = req.file ? req.file.filename : null
-    const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, files, status, notes }] })
+    let fileUrl = null;
+    if (req.file) {
+        fileUrl = await uploadToCloudinary(req.file.buffer);
+    }
+    const createTask = await dbService.create({ model: TaskModel, data: [{ title, description, assignBy, assignTo, startDate, endDate, files: fileUrl, status, notes }] })
     return successResponse({ res, statusCode: 201, message: "Tasks Create Successfully", data: createTask })
 }
 
