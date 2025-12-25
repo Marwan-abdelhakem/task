@@ -32,6 +32,9 @@ router.post("/LeaveRequest", authentication, authorization({ role: ["Employee"] 
 
 router.get("/getAllRequest", authentication, authorization({ role: ["HR"] }), userService.getAllRequest)
 
+router.get("/getRequestById/:id", authentication, authorization({ role: ["HR"] }), userService.getRequestById)
+
+router.patch("/updateRequest/:id", authentication, authorization({ role: ["HR"] }), userService.updateRequest)
 
 router.post("/creatMeeting", validation(meetingValidation), authentication, fileUpload().single("files"), authorization({ role: ["Employee", "HR", "Admin"] }), userService.creatMeeting)
 

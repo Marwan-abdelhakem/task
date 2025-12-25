@@ -136,7 +136,30 @@ export const getAllRequest = async (req, res, next) => {
     if (requests.length === 0) {
         return next(new Error("requests Not Founded", { cause: 409 }))
     }
-    return successResponse({ res, statusCode: 200, message: "successfully", data: { user: requests } })
+    return successResponse({ res, statusCode: 200, message: "successfully", data: { requests: requests } })
+}
+
+//get All RequestID by HR
+
+export const getRequestById = async (req, res, next) => {
+    const { id } = req.params
+    const request = await leaveRequestModel.find({ employeeId: id })
+    if (request.length === 0) {
+        return next(new Error("request Not Founded", { cause: 409 }))
+    }
+    return successResponse({ res, statusCode: 200, message: "request", data: request })
+}
+
+export const updateRequest = async (req, res, next) => {
+    const { id } = req.params
+    const { status } = req.body
+    const request = await leaveRequestModel.findOneAndUpdate({ employeeId: id }, { $set: { status } }, { new: true })
+    if (!request) {
+        return next(new Error("request Not Founded", { cause: 409 }))
+    }
+    const leave = await LeaveModel.findOneAndUpdate({ employeeID: id }, { $set: { totalDays } }, { new: true })
+
+    return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { request, leave } })
 }
 
 //Meeting 

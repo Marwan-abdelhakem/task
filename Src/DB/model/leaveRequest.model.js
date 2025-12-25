@@ -11,6 +11,11 @@ const leaveRequestSchema = new Schema(
             enum: ["annual", "sick", "unpaid", "other"],
             required: true,
         },
+        totalDays: {
+            type: Number,
+            required: true
+        },
+
         startDate: {
             type: Date,
             required: true,
