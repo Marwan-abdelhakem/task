@@ -133,7 +133,7 @@ export const LeaveRequest = async (req, res, next) => {
 
 export const getAllRequest = async (req, res, next) => {
     const requests = await leaveRequestModel.find()
-    if (users.length === 0) {
+    if (requests.length === 0) {
         return next(new Error("requests Not Founded", { cause: 409 }))
     }
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: requests } })
