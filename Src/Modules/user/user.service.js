@@ -10,16 +10,16 @@ import { emailEvent } from "../../Utlis/event.utlis.js"
 import streamifier from "streamifier";
 import cloudinary from "../../config/cloudinary.js";
 const uploadToCloudinary = (fileBuffer) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { resource_type: "auto", folder: "jobs" },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result.secure_url);
-      }
-    );
-    streamifier.createReadStream(fileBuffer).pipe(stream);
-  });
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { resource_type: "auto", folder: "jobs" },
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result.secure_url);
+            }
+        );
+        streamifier.createReadStream(fileBuffer).pipe(stream);
+    });
 };
 export const getProfile = async (req, res, next) => {
     return successResponse({ res, statusCode: 200, message: "successfully", data: { user: req.user } })
@@ -115,7 +115,11 @@ export const updateTasksByEmp = async (req, res, next) => {
 //role title subTitle describtion day startTime endTime typeOfMeeting zoomLink  creatorId addUsers  files 
 export const creatMeeting = async (req, res, next) => {
     const { role, title, subTitle, describtion, day, startTime, endTime, typeOfMeeting, zoomLink, creatorId, addUsers } = req.body
-    const files = req.file ? req.file.filename : null
+    let files = null;
+    if (req.file) {
+        files = await uploadToCloudinary(req.file.buffer);
+    }
+
     const creator = await dbService.findById({ model: UserModel, id: creatorId })
     if (!creator) {
         return next(new Error("User Not Founded", { cause: 404 }))
@@ -224,35 +228,35 @@ export const createJob = async (req, res, next) => {
 
 
 export const applayForJob = async (req, res, next) => {
-  try {
-    const { name, email, phone, age, gender, qualification, experince, status, job_id } = req.body;
+    try {
+        const { name, email, phone, age, gender, qualification, experince, status, job_id } = req.body;
 
-    const job = await dbService.findById({ model: JobModel, id: job_id });
-    if (!job) return next(new Error("job Not Founded", { cause: 404 }));
+        const job = await dbService.findById({ model: JobModel, id: job_id });
+        if (!job) return next(new Error("job Not Founded", { cause: 404 }));
 
-    let cvUrl = null;
-    if (req.file) {
-      cvUrl = await uploadToCloudinary(req.file.buffer);
+        let cvUrl = null;
+        if (req.file) {
+            cvUrl = await uploadToCloudinary(req.file.buffer);
+        }
+
+        emailEvent.emit("confirmEmail", { to: email });
+
+        const applayForJob = await dbService.create({
+            model: newEmployeeModel,
+            data: [{ name, email, phone, age, gender, qualification, experince, cv: cvUrl, status, job_id }]
+        });
+
+        return successResponse({
+            res,
+            statusCode: 201,
+            message: "User created successfully",
+            data: applayForJob
+        });
+
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
-
-    emailEvent.emit("confirmEmail", { to: email });
-
-    const applayForJob = await dbService.create({
-      model: newEmployeeModel,
-      data: [{ name, email, phone, age, gender, qualification, experince, cv: cvUrl, status, job_id }]
-    });
-
-    return successResponse({
-      res,
-      statusCode: 201,
-      message: "User created successfully",
-      data: applayForJob
-    });
-
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
 };
 export const getAlljobs = async (req, res, next) => {
     const job = await JobModel.find()
