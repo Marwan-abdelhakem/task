@@ -124,8 +124,8 @@ export const updateTasksByEmp = async (req, res, next) => {
 //Leave Request by emloyee
 
 export const LeaveRequest = async (req, res, next) => {
-    const { employeeId, leaveType, startDate, endDate, reason, status } = req.body
-    const leaveRequest = await dbService.create({ model: leaveRequestModel, data: [{ employeeId, leaveType, startDate, endDate, reason, status }] })
+    const { employeeId, leaveType, totalDays, startDate, endDate, reason, status } = req.body
+    const leaveRequest = await dbService.create({ model: leaveRequestModel, data: [{ employeeId, leaveType, totalDays, startDate, endDate, reason, status }] })
     return successResponse({ res, statusCode: 201, message: "Request Create Successfully", data: leaveRequest })
 }
 
@@ -152,7 +152,7 @@ export const getRequestById = async (req, res, next) => {
 
 export const updateRequest = async (req, res, next) => {
     const { id } = req.params
-    const { status } = req.body
+    const { status, totalDays } = req.body
     const request = await leaveRequestModel.findOneAndUpdate({ employeeId: id }, { $set: { status } }, { new: true })
     if (!request) {
         return next(new Error("request Not Founded", { cause: 409 }))
