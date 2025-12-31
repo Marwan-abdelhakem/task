@@ -29,9 +29,33 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        salary: {
+        basicSalary: {
             type: Number,
-            required: true
+            required: true,
+            min: 0
+        },
+
+        housingAllowance: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+
+        transportationAllowance: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+
+        otherAllowance: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+
+        totalSalary: {
+            type: Number,
+            default: 0
         }
     },
     {

@@ -54,14 +54,20 @@ export const deleteUser = async (req, res, next) => {
 }
 
 export const createUser = async (req, res, next) => {
-    const { role, user_name, email, password, phone, salary } = req.body
+    const { role, user_name, email, password, phone, basicSalary, housingAllowance, transportationAllowance, otherAllowance } = req.body
 
     const user = await dbService.findOne({ model: UserModel, filter: { email } })
     if (user) {
         return next(new Error("Email already exists", { cause: 409 }))
     }
     const hasshPassword = await hashPassword({ plainText: password })
-    const createUser = await dbService.create({ model: UserModel, data: [{ role, user_name, email, password: hasshPassword, phone, salary }] })
+
+    const totalSalary = Number(basicSalary) +
+        Number(housingAllowance) +
+        Number(transportationAllowance) +
+        Number(otherAllowance);
+
+    const createUser = await dbService.create({ model: UserModel, data: [{ role, user_name, email, password: hasshPassword, phone, basicSalary, housingAllowance, transportationAllowance, otherAllowance, totalSalary }] })
     const totalDays = 20
     const leaveType = "annual"
     const employeeID = createUser[0]._id
