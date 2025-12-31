@@ -18,6 +18,10 @@ router.delete("/deleteUser/:id", authentication, authorization({ role: ["Admin"]
 
 router.post("/createUser", authentication, authorization({ role: ["Admin"] }), userService.createUser)
 
+router.post("/salaryRequest", authentication, authorization({ role: ["Employee"] }), userService.salaryRequest)
+
+router.patch("/updateSalaryRequest/:id", authentication, authorization({ role: ["HR"] }), userService.updateSalaryRequest)
+
 router.post("/createTasks", validation(tasksValidation), authentication, fileUpload().single("files"), authorization({ role: ["Admin"] }), userService.createTasks)
 
 router.patch("/updateTasksByAdmin/:id", authentication, authorization({ role: ["Admin"] }), userService.updateTasksByAdmin)

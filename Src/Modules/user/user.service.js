@@ -8,9 +8,11 @@ import JobModel from "../../DB/model/job.model.js"
 import newEmployeeModel from "../../DB/model/newEmployee.model.js"
 import LeaveModel from "../../DB/model/leave.model.js"
 import leaveRequestModel from "../../DB/model/leaveRequest.model.js"
+import salaryRequestModel from "../../DB/model/salaryRequest.model.js"
 import { emailEvent } from "../../Utlis/event.utlis.js"
 import streamifier from "streamifier";
 import cloudinary from "../../config/cloudinary.js";
+
 const uploadToCloudinary = (fileBuffer) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -62,10 +64,11 @@ export const createUser = async (req, res, next) => {
     }
     const hasshPassword = await hashPassword({ plainText: password })
 
-    const totalSalary = Number(basicSalary) || 0 +
-        Number(housingAllowance) || 0 +
-        Number(transportationAllowance) || 0 +
-        Number(otherAllowance) || 0
+    const totalSalary =
+        (Number(basicSalary) || 0) +
+        (Number(housingAllowance) || 0) +
+        (Number(transportationAllowance) || 0) +
+        (Number(otherAllowance) || 0);
 
     const createUser = await dbService.create({ model: UserModel, data: [{ role, user_name, email, password: hasshPassword, phone, basicSalary, housingAllowance, transportationAllowance, otherAllowance, totalSalary }] })
     const totalDays = 20
@@ -75,6 +78,33 @@ export const createUser = async (req, res, next) => {
     const leaveUser = await dbService.create({ model: LeaveModel, data: [{ totalDays, leaveType, employeeID }] })
     return successResponse({ res, statusCode: 201, message: "User Create Successfully", data: { createUser, leaveUser } })
 }
+
+export const salaryRequest = async (req, res, next) => {
+    const { employeeId, allowanceType, requestedAmount, status } = req.body
+    const salaryRequest = await dbService.create({ model: salaryRequestModel, data: [{ employeeId, allowanceType, requestedAmount, status }] })
+    return successResponse({ res, statusCode: 201, message: "Request Create Successfully", data: salaryRequest })
+}
+
+export const updateSalaryRequest = async (req, res, next) => {
+    const { id } = req.params
+    const { status } = req.body
+    const salaryRequest = await salaryRequestModel.findOneAndUpdate({ employeeId: id }, { $set: { status } }, { new: true })
+    if (!salaryRequest) {
+        return next(new Error("request Not Founded", { cause: 409 }))
+    }
+    if (status === "approved") {
+        const user = await dbService.findOne({ model: UserModel, filter: { _id: id } })
+
+        const totalSalary = user.totalSalary + salaryRequest.requestedAmount
+
+        const request = await UserModel.findOneAndUpdate({ _id: id }, { $set: { totalSalary } }, { new: true })
+
+        return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest, request } })
+    }
+    return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest } })
+
+}
+
 
 //admin
 
