@@ -62,10 +62,10 @@ export const createUser = async (req, res, next) => {
     }
     const hasshPassword = await hashPassword({ plainText: password })
 
-    const totalSalary = Number(basicSalary) +
-        Number(housingAllowance) +
-        Number(transportationAllowance) +
-        Number(otherAllowance);
+    const totalSalary = Number(basicSalary) || 0 +
+        Number(housingAllowance) || 0 +
+        Number(transportationAllowance) || 0 +
+        Number(otherAllowance) || 0
 
     const createUser = await dbService.create({ model: UserModel, data: [{ role, user_name, email, password: hasshPassword, phone, basicSalary, housingAllowance, transportationAllowance, otherAllowance, totalSalary }] })
     const totalDays = 20
