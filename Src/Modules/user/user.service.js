@@ -94,12 +94,24 @@ export const updateSalaryRequest = async (req, res, next) => {
     }
     if (status === "approved") {
         const user = await dbService.findOne({ model: UserModel, filter: { _id: id } })
-
-        const totalSalary = user.totalSalary + salaryRequest.requestedAmount
-
-        const request = await UserModel.findOneAndUpdate({ _id: id }, { $set: { totalSalary } }, { new: true })
-
-        return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest, request } })
+        if (salaryRequest.allowanceType === "housingAllowance") {
+            const housingAllowance = user.housingAllowance + salaryRequest.requestedAmount
+            const totalSalary = user.totalSalary + housingAllowance
+            const request = await UserModel.findOneAndUpdate({ _id: id }, { $set: { housingAllowance, totalSalary } }, { new: true })
+            return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest, request } })
+        }
+        if (salaryRequest.allowanceType === "transportationAllowance") {
+            const transportationAllowance = user.transportationAllowance + salaryRequest.requestedAmount
+            const totalSalary = user.totalSalary + transportationAllowance
+            const request = await UserModel.findOneAndUpdate({ _id: id }, { $set: { transportationAllowance, totalSalary } }, { new: true })
+            return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest, request } })
+        }
+        if (salaryRequest.allowanceType === "otherAllowance") {
+            const otherAllowance = user.otherAllowance + salaryRequest.requestedAmount
+            const totalSalary = user.totalSalary + otherAllowance
+            const request = await UserModel.findOneAndUpdate({ _id: id }, { $set: { otherAllowance, totalSalary } }, { new: true })
+            return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest, request } })
+        }
     }
     return successResponse({ res, statusCode: 200, message: "request Update successffully", data: { salaryRequest } })
 
